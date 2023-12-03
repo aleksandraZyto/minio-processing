@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
 	db "github.com/aleksandraZyto/minio-processing/db"
 	d "github.com/aleksandraZyto/minio-processing/docker"
@@ -15,7 +14,6 @@ import (
 )
 
 func main() {
-	time.Sleep(10 * time.Second)
 	ctx := context.Background()
 
 	dockerClient, err := setupDockerClient()
