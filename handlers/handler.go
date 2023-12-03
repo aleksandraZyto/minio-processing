@@ -64,7 +64,7 @@ func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error getting file with id %s: ", id)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-		return 
+		return
 	}
 
 	respJSON, err := json.Marshal(content)

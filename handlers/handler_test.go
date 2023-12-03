@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"bytes"
-	"log"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	c "github.com/aleksandraZyto/minio-processing/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -42,24 +43,60 @@ func TestRootEndpoint(t *testing.T) {
 }
 
 func TestGetFileHandler(t *testing.T) {
-	expResp := "test-content"
-	mockService := &ServiceMock{}
-	mockService.On("GetFile", "1").Return(expResp, nil)
-
-	h := NewHandler(mockService)
-	h.registerHandlers()
-
-	req, err := http.NewRequest("GET", "/file/1", nil)
-	if err != nil {
-		log.Println("Error adding test GET handler")
+	testCases := []struct {
+		testName     string
+		id           string
+		expResp      string
+		serviceErr   error
+		expectedCode int
+	}{
+		{
+			testName:     "Happy path",
+			id:           "1",
+			expResp:      "test-content",
+			serviceErr:   nil,
+			expectedCode: http.StatusOK,
+		},
+		{
+			testName:     "Return StatusNotFound if key does not exist",
+			id:           "1",
+			expResp:      "",
+			serviceErr:   errors.New(c.KeyDoesNotExistErr),
+			expectedCode: http.StatusNotFound,
+		},
+		{
+			testName:     "Return InternalServerError if service fails",
+			id:           "1",
+			expResp:      "",
+			serviceErr:   errors.New("Some error"),
+			expectedCode: http.StatusInternalServerError,
+		},
 	}
 
-	rr := httptest.NewRecorder()
-	h.Router.ServeHTTP(rr, req)
+	for _, tc := range testCases {
+		t.Run(tc.testName, func(t *testing.T) {
+			mockService := &ServiceMock{}
+			mockService.On("GetFile", tc.id).Return(tc.expResp, tc.serviceErr)
 
-	actResp := strings.Trim(rr.Body.String(), "\"")
-	assert.Equal(t, http.StatusOK, rr.Code)
-	assert.Equal(t, expResp, actResp)
+			h := NewHandler(mockService)
+			h.registerHandlers()
+
+			req, err := http.NewRequest("GET", "/file/"+tc.id, nil)
+			if err != nil {
+				t.Fatal("Error adding test GET handler")
+			}
+
+			rr := httptest.NewRecorder()
+			h.Router.ServeHTTP(rr, req)
+
+			assert.Equal(t, tc.expectedCode, rr.Code)
+
+			if tc.expectedCode == http.StatusOK {
+				actResp := strings.Trim(rr.Body.String(), "\"")
+				assert.Equal(t, tc.expResp, actResp)
+			}
+		})
+	}
 }
 
 func TestPutFileHandler(t *testing.T) {
