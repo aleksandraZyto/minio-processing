@@ -4,9 +4,8 @@ It spins up multiple MinIO instances and allows you to store obejcts on them.
 MinIO instance to store an object is chosen based on the id of the object, so that they are distributed evenly.
 
 ## Getting Started
-#Prerequisites
-Go
-Docker
+# Prerequisites
+Installed Go and docker-compose
 
 ## Running the app
 ```docker-compose up --build```
