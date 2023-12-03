@@ -8,11 +8,12 @@ import (
 )
 
 type Service interface {
-	GetFile(id string) (content string, err error)
+	GetFile(id string) (string, error)
+	PutFile(id string, content string) error
 }
 
 type FileService struct {
-	Ctx context.Context
+	Ctx     context.Context
 	Storage s.Storage
 }
 
@@ -23,4 +24,9 @@ func (fs *FileService) GetFile(id string) (string, error) {
 		return "", err
 	}
 	return content, nil
+}
+
+func (fs *FileService) PutFile(id string, content string) error {
+	log.Println(content)
+	return nil
 }
