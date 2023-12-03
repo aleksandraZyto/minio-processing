@@ -50,11 +50,6 @@ func (h *Handler) registerHandlers() {
 func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
-	if id == "" {
-		log.Println("Provided empty id")
-		http.Error(w, "ID cannot be empty", http.StatusBadRequest)
-		return
-	}
 
 	content, err := h.Service.GetFile(id)
 	if err != nil {
@@ -83,11 +78,6 @@ func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) putFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	if id == "" {
-		log.Println("Passed id is empty")
-		http.Error(w, "ID cannot be empty", http.StatusBadRequest)
-		return
-	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

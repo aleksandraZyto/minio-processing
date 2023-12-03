@@ -100,19 +100,54 @@ func TestGetFileHandler(t *testing.T) {
 }
 
 func TestPutFileHandler(t *testing.T) {
-	mockService := &ServiceMock{}
-	mockService.On("PutFile", "1", "test-content").Return(nil)
+    testCases := []struct {
+        testName      string
+        id            string
+        content       string
+        serviceErr    error
+        expectedCode  int
+    }{
+        {
+            testName:     "Happy path",
+            id:           "1",
+            content:      "test-content",
+            serviceErr:   nil,
+            expectedCode: http.StatusOK,
+        },
+        {
+            testName:     "Return InternalServerError if service fails",
+            id:           "1",
+            content:      "test-content",
+            serviceErr:   errors.New("Error from service"),
+            expectedCode: http.StatusInternalServerError,
+        },
+        {
+            testName:     "Return BadRequest if content is empty",
+            id:           "1",
+            content:      "",
+            serviceErr:   nil,
+            expectedCode: http.StatusBadRequest,
+        },
+    }
 
-	h := NewHandler(mockService)
-	h.registerHandlers()
+    for _, tc := range testCases {
+        t.Run(tc.testName, func(t *testing.T) {
+            mockService := &ServiceMock{}
+            mockService.On("PutFile", tc.id, tc.content).Return(tc.serviceErr)
 
-	requestBody := []byte(`{"content": "test-content"}`)
-	req, err := http.NewRequest("PUT", "/file/1", bytes.NewBuffer(requestBody))
-	if err != nil {
-		t.Fatal(err)
-	}
-	rr := httptest.NewRecorder()
-	h.Router.ServeHTTP(rr, req)
+            h := NewHandler(mockService)
+            h.registerHandlers()
 
-	assert.Equal(t, http.StatusOK, rr.Code)
+            requestBody := []byte(`{"content": "` + tc.content + `"}`)
+            req, err := http.NewRequest("PUT", "/file/"+tc.id, bytes.NewBuffer(requestBody))
+            if err != nil {
+                t.Fatal(err)
+            }
+
+            rr := httptest.NewRecorder()
+            h.Router.ServeHTTP(rr, req)
+
+            assert.Equal(t, tc.expectedCode, rr.Code)
+        })
+    }
 }
