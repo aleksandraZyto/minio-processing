@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"log"
@@ -34,7 +35,15 @@ func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
 	return string(content), nil
 }
 
-func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) error {
-	log.Printf("Putting file iin storage %s", id)
+func (s *FileStorage) PutFile(ctx context.Context, id string, content string) error {
+	contentBytes := []byte(content)
+
+	_, err := s.Minio.PutObject(ctx, "filestorage", id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
+	if err != nil {
+		log.Printf("Error putting object to minio bucket: %v", err)
+		return err
+	}
+
+	log.Printf("Object with id %s successfully uploaded to minio bucket", id)
 	return nil
 }
