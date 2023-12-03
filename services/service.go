@@ -1,14 +1,24 @@
 package services
 
-import "log"
+import (
+	"log"
+
+	s "github.com/aleksandraZyto/minio-processing/storage"
+)
 
 type Service interface {
 	GetFile(id string) (content string, err error)
 }
 
-type FileService struct{}
+type FileService struct {
+	Storage s.Storage
+}
 
-func (fs *FileService) GetFile(id string) (content string, err error) {
-	log.Println(fs)
-	return "File from service", nil
+func (fs *FileService) GetFile(id string) (string, error) {
+	content, err := fs.Storage.GetFile(id)
+	if err != nil {
+		log.Println("Error getting file from storage")
+		return "", nil
+	}
+	return content, nil
 }
