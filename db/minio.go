@@ -16,7 +16,19 @@ type MinioDetails struct {
 	SecretKey string
 }
 
-func NewClient(ctx context.Context) (*minio.Client, error) {
+func GenerateClients(ctx context.Context) ([]*minio.Client, error) {
+	var minioClients []*minio.Client
+	for i:=0; i<3; i++ {
+		client, err := newClient(ctx)
+		if err != nil {
+			log.Printf("Error creating client %d", i)
+		}
+		minioClients = append(minioClients, client)
+	}
+	return minioClients, nil
+}
+
+func newClient(ctx context.Context) (*minio.Client, error) {
 	endpoint := "amazin-object-storage-node-1:9000"
 	accessKeyID := "ring"
 	secretAccessKey := "treepotato"

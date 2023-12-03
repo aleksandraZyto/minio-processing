@@ -15,7 +15,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	client, err := configureMinioClient(ctx)
+	minioClients, err := setupMinioClient(ctx)
 	if err != nil {
 		log.Println("Error configuring minio client")
 	}
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	storage := &st.FileStorage{
-		Minio: client,
+		Minio: minioClients,
 	}
 	service := &s.FileService{
 		Ctx:     ctx,
@@ -38,12 +38,12 @@ func main() {
 	}
 }
 
-func configureMinioClient(ctx context.Context) (*minio.Client, error) {
-	client, err := db.NewClient(ctx)
+func setupMinioClient(ctx context.Context) ([]*minio.Client, error) {
+	clients, err := db.GenerateClients(ctx)
 	if err != nil {
-		return client, err
+		return clients, err
 	}
-	return client, nil
+	return clients, nil
 }
 
 func setupDockerClient(ctx context.Context) (context.Context, error) {
@@ -56,6 +56,8 @@ func setupDockerClient(ctx context.Context) (context.Context, error) {
 		log.Println("Error getting minio instances details")
 		return ctx, err
 	}
+	log.Println("Minio details:")
+	log.Println(minioDetails)
 	ctx = context.WithValue(ctx, db.MinioKey("minioDetails"), minioDetails)
 	return ctx, nil
 }
