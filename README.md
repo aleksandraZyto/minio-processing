@@ -17,7 +17,7 @@ Request:
 Response:
 ```
 {
-  "content": "object-content"
+    "Content": "object-content"
 }
 ```
 
@@ -26,6 +26,6 @@ Response:
 Request body:
 ```
 {
-	"Content": "testing"
+    "Content": "testing"
 }
 ```
