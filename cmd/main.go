@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	h "github.com/aleksandraZyto/minio-processing/handlers"
+)
 
 func main() {
-	fmt.Println("Hello World!")
+	handler := h.NewHandler()
+	if err := handler.Server.ListenAndServe(); err != nil {
+		log.Printf("Error occurred when serving %v\n", err)
+	}
 }
