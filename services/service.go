@@ -5,7 +5,6 @@ import (
 	"log"
 
 	s "github.com/aleksandraZyto/minio-processing/storage"
-	db "github.com/aleksandraZyto/minio-processing/db"
 )
 
 type Service interface {
@@ -19,10 +18,6 @@ type FileService struct {
 }
 
 func (fs *FileService) GetFile(id string) (string, error) {
-	minioDetails, ok := fs.Ctx.Value(db.MinioKey("minioDetails")).(db.MinioDetails)
-	log.Println("MINIO:::::::")
-	log.Println(minioDetails)
-	log.Println(ok)
 	content, err := fs.Storage.GetFile(fs.Ctx, id)
 	if err != nil {
 		log.Println("Error getting file from storage")

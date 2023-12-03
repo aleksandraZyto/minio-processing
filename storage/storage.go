@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"hash/fnv"
 	"io"
 	"log"
 
@@ -19,8 +20,7 @@ type FileStorage struct {
 }
 
 func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
-	startGetWorkers(ctx, fs)
-	file, err := fs.Minio[0].GetObject(ctx, "filestorage", "test.txt", minio.GetObjectOptions{})
+	file, err := fs.Minio[0].GetObject(ctx, "filestorage", id, minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("Getting file from bucket failed: %v", err)
 		return "", err
@@ -36,19 +36,23 @@ func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
 	return string(content), nil
 }
 
-func startGetWorkers(ctx context.Context, fs *FileStorage) {
-
-}
-
-func (s *FileStorage) PutFile(ctx context.Context, id string, content string) error {
+func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) error {
+	i := getMinioInstance(id, len(fs.Minio))
 	contentBytes := []byte(content)
 
-	_, err := s.Minio[0].PutObject(ctx, "filestorage", id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
+	_, err := fs.Minio[i].PutObject(ctx, "filestorage", id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
 	if err != nil {
 		log.Printf("Error putting object to minio bucket: %v", err)
 		return err
 	}
 
-	log.Printf("Object with id %s successfully uploaded to minio bucket", id)
+	log.Printf("Object with id %s successfully uploaded to minio instance %s", id, fs.Minio[i].EndpointURL())
 	return nil
+}
+
+func getMinioInstance(id string, numStorages int) int {
+	hasher := fnv.New32a()
+	hasher.Write([]byte(id))
+	hashValue := hasher.Sum32()
+	return int(hashValue % uint32(numStorages))
 }

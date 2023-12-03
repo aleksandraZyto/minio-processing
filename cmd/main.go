@@ -32,6 +32,7 @@ func main() {
 		Minio: minioClients,
 	}
 	service := &s.FileService{
+		Ctx:     ctx,
 		Storage: storage,
 	}
 	handler := h.NewHandler(service)
@@ -61,6 +62,6 @@ func setupDockerClient() (*client.Client, error) {
 	if err != nil {
 		return dockerClient, err
 	}
-	log.Println("Successfully configured docker client")
+	log.Println("Docker client configured")
 	return dockerClient, nil
 }

@@ -42,7 +42,7 @@ func GetMinioDetails(client *client.Client) ([]db.MinioDetails, error) {
 			minioContainerDetails = append(minioContainerDetails, minioDetails)
 		}
 	}
-	log.Println("Minio details successfully collected")
+	log.Println("Collected minio details")
 	return minioContainerDetails, nil
 }
 

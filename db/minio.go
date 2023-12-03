@@ -25,7 +25,7 @@ func GenerateClients(ctx context.Context, minioDetails []MinioDetails) ([]*minio
 		if err != nil {
 			log.Printf("Error creating client %s", md.Name)
 		}
-		log.Printf("Successfully created client %s", md.Name)
+		log.Printf("Client created: %s", md.Name)
 		minioClients = append(minioClients, client)
 	}
 	return minioClients, nil
@@ -52,18 +52,18 @@ func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, e
 		return minioClient, err
 	}
 
-	log.Println("Succussfully created minio client")
+	log.Printf("Succussfully created minio client %s", minioDetails.Name)
 	return minioClient, nil
 }
 
 func newBucket(ctx context.Context, mc *minio.Client) error {
-	log.Println("Creating new minio bucket")
+	log.Printf("Creating new minio bucket at endpoint %s", mc.EndpointURL())
 	bucketName := "filestorage"
 	err := mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
 		exists, errBucketExists := mc.BucketExists(ctx, bucketName)
 		if errBucketExists == nil && exists {
-			log.Printf("Bucket '%s' already exists", bucketName)
+			log.Printf("Bucket '%s' already exists at andpoint %s", bucketName, mc.EndpointURL())
 			return nil
 		} else {
 			log.Printf("Error making bucket: %v", err)

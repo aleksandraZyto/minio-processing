@@ -39,7 +39,7 @@ func NewHandler(service s.Service) *Handler {
 
 func (h *Handler) registerHandlers() {
 	h.Router.HandleFunc("/file/{id}", h.getFile).Methods("GET")
-	h.Router.HandleFunc("/file/{id}", h.putFile).Methods("Put")
+	h.Router.HandleFunc("/file/{id}", h.putFile).Methods("PUT")
 	h.Router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Hello World!")
 	})
