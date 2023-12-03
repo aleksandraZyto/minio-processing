@@ -6,6 +6,7 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+
 )
 
 type MinioKey string
@@ -16,22 +17,24 @@ type MinioDetails struct {
 	SecretKey string
 }
 
-func GenerateClients(ctx context.Context) ([]*minio.Client, error) {
+func GenerateClients(ctx context.Context, minioDetails []MinioDetails) ([]*minio.Client, error) {
+	log.Println("Generating clients")
 	var minioClients []*minio.Client
-	for i:=0; i<3; i++ {
-		client, err := newClient(ctx)
+	for _, md := range minioDetails {
+		client, err := newClient(ctx, md)
 		if err != nil {
-			log.Printf("Error creating client %d", i)
+			log.Printf("Error creating client %s", md.Name)
 		}
+		log.Printf("Successfully created client %s", md.Name)
 		minioClients = append(minioClients, client)
 	}
 	return minioClients, nil
 }
 
-func newClient(ctx context.Context) (*minio.Client, error) {
-	endpoint := "amazin-object-storage-node-1:9000"
-	accessKeyID := "ring"
-	secretAccessKey := "treepotato"
+func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, error) {
+	endpoint := minioDetails.Name+":9000"
+	accessKeyID := minioDetails.AccessKey
+	secretAccessKey := minioDetails.SecretKey
 	useSSL := false
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
@@ -54,6 +57,7 @@ func newClient(ctx context.Context) (*minio.Client, error) {
 }
 
 func newBucket(ctx context.Context, mc *minio.Client) error {
+	log.Println("Creating new minio bucket")
 	bucketName := "filestorage"
 	err := mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {

@@ -19,6 +19,7 @@ type FileStorage struct {
 }
 
 func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
+	startGetWorkers(ctx, fs)
 	file, err := fs.Minio[0].GetObject(ctx, "filestorage", "test.txt", minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("Getting file from bucket failed: %v", err)
@@ -33,6 +34,10 @@ func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
 
 	log.Printf("Successfully retrieved file %s", id)
 	return string(content), nil
+}
+
+func startGetWorkers(ctx context.Context, fs *FileStorage) {
+
 }
 
 func (s *FileStorage) PutFile(ctx context.Context, id string, content string) error {
