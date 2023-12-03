@@ -81,7 +81,7 @@ func TestGetFileHandler(t *testing.T) {
 			h := NewHandler(mockService)
 			h.registerHandlers()
 
-			req, err := http.NewRequest("GET", "/file/"+tc.id, nil)
+			req, err := http.NewRequest("GET", "/object/"+tc.id, nil)
 			if err != nil {
 				t.Fatal("Error adding test GET handler")
 			}
@@ -139,7 +139,7 @@ func TestPutFileHandler(t *testing.T) {
             h.registerHandlers()
 
             requestBody := []byte(`{"content": "` + tc.content + `"}`)
-            req, err := http.NewRequest("PUT", "/file/"+tc.id, bytes.NewBuffer(requestBody))
+            req, err := http.NewRequest("PUT", "/object/"+tc.id, bytes.NewBuffer(requestBody))
             if err != nil {
                 t.Fatal(err)
             }

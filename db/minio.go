@@ -2,11 +2,12 @@ package db
 
 import (
 	"context"
+	"hash/fnv"
 	"log"
 
+	c "github.com/aleksandraZyto/minio-processing/constants"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	c "github.com/aleksandraZyto/minio-processing/constants"
 )
 
 type MinioKey string
@@ -32,7 +33,7 @@ func GenerateClients(ctx context.Context, minioDetails []MinioDetails) ([]*minio
 }
 
 func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, error) {
-	endpoint := minioDetails.Name+":"+c.MinioPortNumber
+	endpoint := minioDetails.Name + ":" + c.MinioPortNumber
 	accessKeyID := minioDetails.AccessKey
 	secretAccessKey := minioDetails.SecretKey
 	useSSL := false
@@ -72,4 +73,11 @@ func newBucket(ctx context.Context, mc *minio.Client) error {
 	}
 	log.Printf("Succussfully created bucket %s", bucketName)
 	return nil
+}
+
+func GetMinioInstance(id string, numStorages int) int {
+	hasher := fnv.New32a()
+	hasher.Write([]byte(id))
+	hashValue := hasher.Sum32()
+	return int(hashValue % uint32(numStorages))
 }

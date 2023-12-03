@@ -3,12 +3,12 @@ package storage
 import (
 	"bytes"
 	"context"
-	"hash/fnv"
 	"io"
 	"log"
 
-	"github.com/minio/minio-go/v7"
 	c "github.com/aleksandraZyto/minio-processing/constants"
+	db "github.com/aleksandraZyto/minio-processing/db"
+	"github.com/minio/minio-go/v7"
 )
 
 type Storage interface {
@@ -21,7 +21,7 @@ type FileStorage struct {
 }
 
 func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
-	i := getMinioInstance(id, len(fs.Minio))
+	i := db.GetMinioInstance(id, len(fs.Minio))
 	file, err := fs.Minio[i].GetObject(ctx, c.BucketName, id, minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("Getting file from bucket failed: %v", err)
@@ -39,7 +39,7 @@ func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
 }
 
 func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) error {
-	i := getMinioInstance(id, len(fs.Minio))
+	i := db.GetMinioInstance(id, len(fs.Minio))
 	contentBytes := []byte(content)
 
 	_, err := fs.Minio[i].PutObject(ctx, c.BucketName, id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
@@ -50,11 +50,4 @@ func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) e
 
 	log.Printf("Object with id %s successfully uploaded to minio instance %s", id, fs.Minio[i].EndpointURL())
 	return nil
-}
-
-func getMinioInstance(id string, numStorages int) int {
-	hasher := fnv.New32a()
-	hasher.Write([]byte(id))
-	hashValue := hasher.Sum32()
-	return int(hashValue % uint32(numStorages))
 }
