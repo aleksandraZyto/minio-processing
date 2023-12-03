@@ -27,6 +27,10 @@ func (fs *FileService) GetFile(id string) (string, error) {
 }
 
 func (fs *FileService) PutFile(id string, content string) error {
-	log.Println(content)
+	err := fs.Storage.PutFile(fs.Ctx, id, content)
+	if err != nil {
+		log.Println("Error putting the file into storage")
+		return err
+	}
 	return nil
 }

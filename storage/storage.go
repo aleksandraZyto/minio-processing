@@ -10,6 +10,7 @@ import (
 
 type Storage interface {
 	GetFile(ctx context.Context, id string) (string, error)
+	PutFile(ctx context.Context, id string, content string) error
 }
 
 type FileStorage struct {
@@ -31,4 +32,9 @@ func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
 
 	log.Printf("Successfully retrieved file %s", id)
 	return string(content), nil
+}
+
+func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) error {
+	log.Printf("Putting file iin storage %s", id)
+	return nil
 }

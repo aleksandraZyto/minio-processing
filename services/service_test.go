@@ -12,9 +12,14 @@ type StorageMock struct {
 	mock.Mock
 }
 
-func (sm *StorageMock) GetFile(ctx context.Context, id string) (string, error){
+func (sm *StorageMock) GetFile(ctx context.Context, id string) (string, error) {
 	args := sm.Called(ctx, id)
 	return args.Get(0).(string), args.Error(1)
+}
+
+func (sm *StorageMock) PutFile(ctx context.Context, id string, content string) error {
+	args := sm.Called(ctx, id, content)
+	return args.Error(0)
 }
 
 func TestGetFileService(t *testing.T) {
@@ -27,7 +32,17 @@ func TestGetFileService(t *testing.T) {
 	}
 
 	content, err := service.GetFile("1")
-	
+
 	assert.Equal(t, exp, content)
+	assert.Equal(t, nil, err)
+}
+
+func TestPutObjectService(t *testing.T) {
+	mockStorage := &StorageMock{}
+	mockStorage.On("PutFile", nil, "1", "test-content").Return(nil)
+
+	service := &FileService{Storage: mockStorage}
+	err := service.PutFile("1", "test-content")
+
 	assert.Equal(t, nil, err)
 }
