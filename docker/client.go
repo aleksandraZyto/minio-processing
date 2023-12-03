@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	db "github.com/aleksandraZyto/minio-processing/db"
+	cst "github.com/aleksandraZyto/minio-processing/constants"
 )
 
 func NewClient() (*client.Client, error) {
@@ -31,12 +32,12 @@ func GetMinioDetails(client *client.Client) ([]db.MinioDetails, error) {
 	log.Println("Container list retrieved")
 	var minioContainerDetails []db.MinioDetails
 	for _, c := range containers {
-		if strings.Contains(c.Names[0], "amazin-object-storage-node-") {
+		if strings.Contains(c.Names[0], cst.MinioInstancePrefix) {
 			containerDetails, _ := client.ContainerInspect(context.Background(), c.Names[0])
 			minioDetails := db.MinioDetails{
 				Name:      c.Names[0][1:],
-				AccessKey: getProperty(containerDetails, "MINIO_ACCESS_KEY"),
-				SecretKey: getProperty(containerDetails, "MINIO_SECRET_KEY"),
+				AccessKey: getProperty(containerDetails, cst.AccessKey),
+				SecretKey: getProperty(containerDetails, cst.SecretKey),
 			}
 
 			minioContainerDetails = append(minioContainerDetails, minioDetails)

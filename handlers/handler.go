@@ -97,7 +97,7 @@ func (h *Handler) putFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(reqObj.Content) == 0 { // what if content is empty???
+	if len(reqObj.Content) == 0 { 
 		log.Println("Invalid JSON format: 'content' field is required")
 		w.WriteHeader(http.StatusBadRequest)
 		return

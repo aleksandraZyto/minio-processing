@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/minio/minio-go/v7"
+	c "github.com/aleksandraZyto/minio-processing/constants"
 )
 
 type Storage interface {
@@ -20,7 +21,7 @@ type FileStorage struct {
 }
 
 func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
-	file, err := fs.Minio[0].GetObject(ctx, "filestorage", id, minio.GetObjectOptions{})
+	file, err := fs.Minio[0].GetObject(ctx, c.BucketName, id, minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("Getting file from bucket failed: %v", err)
 		return "", err
@@ -40,7 +41,7 @@ func (fs *FileStorage) PutFile(ctx context.Context, id string, content string) e
 	i := getMinioInstance(id, len(fs.Minio))
 	contentBytes := []byte(content)
 
-	_, err := fs.Minio[i].PutObject(ctx, "filestorage", id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
+	_, err := fs.Minio[i].PutObject(ctx, c.BucketName, id, bytes.NewReader(contentBytes), int64(len(content)), minio.PutObjectOptions{})
 	if err != nil {
 		log.Printf("Error putting object to minio bucket: %v", err)
 		return err

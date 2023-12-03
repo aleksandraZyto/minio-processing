@@ -6,7 +6,7 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-
+	c "github.com/aleksandraZyto/minio-processing/constants"
 )
 
 type MinioKey string
@@ -32,7 +32,7 @@ func GenerateClients(ctx context.Context, minioDetails []MinioDetails) ([]*minio
 }
 
 func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, error) {
-	endpoint := minioDetails.Name+":9000"
+	endpoint := minioDetails.Name+c.PortNumber
 	accessKeyID := minioDetails.AccessKey
 	secretAccessKey := minioDetails.SecretKey
 	useSSL := false
@@ -58,7 +58,7 @@ func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, e
 
 func newBucket(ctx context.Context, mc *minio.Client) error {
 	log.Printf("Creating new minio bucket at endpoint %s", mc.EndpointURL())
-	bucketName := "filestorage"
+	bucketName := c.BucketName
 	err := mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
 		exists, errBucketExists := mc.BucketExists(ctx, bucketName)
