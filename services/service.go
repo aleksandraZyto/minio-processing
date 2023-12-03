@@ -18,7 +18,7 @@ func (fs *FileService) GetFile(id string) (string, error) {
 	content, err := fs.Storage.GetFile(id)
 	if err != nil {
 		log.Println("Error getting file from storage")
-		return "", nil
+		return "", err
 	}
 	return content, nil
 }

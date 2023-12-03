@@ -6,6 +6,6 @@ type Storage interface {
 
 type FileStorage struct{}
 
-func (fs *FileStorage) GetFile(id string) (string, error){
+func (fs *FileStorage) GetFile(id string) (string, error) {
 	return "Content from storage", nil
 }
