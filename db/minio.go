@@ -8,6 +8,14 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+type MinioKey string
+
+type MinioDetails struct {
+	Name      string
+	AccessKey string
+	SecretKey string
+}
+
 func NewClient(ctx context.Context) (*minio.Client, error) {
 	endpoint := "amazin-object-storage-node-1:9000"
 	accessKeyID := "ring"
