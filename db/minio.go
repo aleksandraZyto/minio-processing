@@ -20,7 +20,7 @@ func NewClient(ctx context.Context) (*minio.Client, error) {
 	})
 	if err != nil {
 		log.Printf("Error creating minio client: %v", err)
-		return minioClient, nil
+		return minioClient, err
 	}
 
 	err = newBucket(ctx, minioClient)

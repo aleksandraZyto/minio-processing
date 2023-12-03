@@ -1,24 +1,26 @@
 package services
 
 import (
+	"context"
 	"testing"
-	"github.com/stretchr/testify/mock"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 type StorageMock struct {
 	mock.Mock
 }
 
-func (sm *StorageMock) GetFile(id string) (string, error){
-	args := sm.Called(id)
+func (sm *StorageMock) GetFile(ctx context.Context, id string) (string, error){
+	args := sm.Called(ctx, id)
 	return args.Get(0).(string), args.Error(1)
 }
 
 func TestGetFileService(t *testing.T) {
 	mockStorage := &StorageMock{}
 	exp := "Content from storage"
-	mockStorage.On("GetFile", "1").Return(exp, nil)
+	mockStorage.On("GetFile", nil, "1").Return(exp, nil)
 
 	service := &FileService{
 		Storage: mockStorage,

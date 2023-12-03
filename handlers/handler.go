@@ -33,13 +33,13 @@ func NewHandler(service s.Service) *Handler {
 }
 
 func (h *Handler) registerHandlers() {
-	h.Router.HandleFunc("/file/{id}", h.GetFile).Methods("GET")
+	h.Router.HandleFunc("/file/{id}", h.getFile).Methods("GET")
 	h.Router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Hello World!")
 	})
 }
 
-func (h *Handler) GetFile(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	if id == "" {

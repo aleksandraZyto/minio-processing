@@ -1,11 +1,34 @@
 package storage
 
+import (
+	"context"
+	"io"
+	"log"
+
+	"github.com/minio/minio-go/v7"
+)
+
 type Storage interface {
-	GetFile(id string) (string, error)
+	GetFile(ctx context.Context, id string) (string, error)
 }
 
-type FileStorage struct{}
+type FileStorage struct {
+	Minio *minio.Client
+}
 
-func (fs *FileStorage) GetFile(id string) (string, error) {
-	return "Content from storage", nil
+func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
+	file, err := fs.Minio.GetObject(ctx, "filestorage", "test.txt", minio.GetObjectOptions{})
+	if err != nil {
+		log.Printf("Getting file from bucket failed: %v", err)
+		return "", err
+	}
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		log.Printf("Error reading the file: %v", err)
+		return "", err
+	}
+
+	log.Printf("Successfully retrieved file %s", id)
+	return string(content), nil
 }
