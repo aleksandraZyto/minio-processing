@@ -21,7 +21,8 @@ type FileStorage struct {
 }
 
 func (fs *FileStorage) GetFile(ctx context.Context, id string) (string, error) {
-	file, err := fs.Minio[0].GetObject(ctx, c.BucketName, id, minio.GetObjectOptions{})
+	i := getMinioInstance(id, len(fs.Minio))
+	file, err := fs.Minio[i].GetObject(ctx, c.BucketName, id, minio.GetObjectOptions{})
 	if err != nil {
 		log.Printf("Getting file from bucket failed: %v", err)
 		return "", err

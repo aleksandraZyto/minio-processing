@@ -32,7 +32,7 @@ func GenerateClients(ctx context.Context, minioDetails []MinioDetails) ([]*minio
 }
 
 func newClient(ctx context.Context, minioDetails MinioDetails) (*minio.Client, error) {
-	endpoint := minioDetails.Name+c.PortNumber
+	endpoint := minioDetails.Name+":"+c.MinioPortNumber
 	accessKeyID := minioDetails.AccessKey
 	secretAccessKey := minioDetails.SecretKey
 	useSSL := false

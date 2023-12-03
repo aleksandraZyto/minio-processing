@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	c "github.com/aleksandraZyto/minio-processing/constants"
 	s "github.com/aleksandraZyto/minio-processing/services"
 	"github.com/gorilla/mux"
 )
@@ -23,7 +25,7 @@ type Request struct {
 func NewHandler(service s.Service) *Handler {
 	router := mux.NewRouter()
 	server := &http.Server{
-		Addr:    "0.0.0.0:3000",
+		Addr:    c.AppAddress,
 		Handler: router,
 	}
 	handler := &Handler{
@@ -50,14 +52,19 @@ func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	if id == "" {
 		log.Println("Provided empty id")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "ID cannot be empty", http.StatusBadRequest)
 		return
 	}
 
 	content, err := h.Service.GetFile(id)
 	if err != nil {
-		log.Printf("Error getting file with id %s", id)
-		return
+		if err.Error() == errors.New(c.KeyDoesNotExistErr).Error() {
+			http.Error(w, "This id does not exist", http.StatusNotFound)
+		} else {
+			log.Printf("Error getting file with id %s: ", id)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return 
 	}
 
 	respJSON, err := json.Marshal(content)
@@ -78,7 +85,7 @@ func (h *Handler) putFile(w http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 	if id == "" {
 		log.Println("Passed id is empty")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "ID cannot be empty", http.StatusBadRequest)
 		return
 	}
 
@@ -93,13 +100,13 @@ func (h *Handler) putFile(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &reqObj)
 	if err != nil {
 		log.Printf("Error unmarshalling request body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if len(reqObj.Content) == 0 { 
+	if len(reqObj.Content) == 0 {
 		log.Println("Invalid JSON format: 'content' field is required")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "'content' field is required", http.StatusBadRequest)
 		return
 	}
 
