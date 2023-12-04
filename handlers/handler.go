@@ -9,6 +9,7 @@ import (
 
 	c "github.com/aleksandraZyto/minio-processing/constants"
 	s "github.com/aleksandraZyto/minio-processing/services"
+	m "github.com/aleksandraZyto/minio-processing/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -35,6 +36,7 @@ func NewHandler(service s.Service) *Handler {
 	}
 
 	handler.registerHandlers()
+	handler.Router.Use(m.TimeoutMiddleware)
 
 	return handler
 }
