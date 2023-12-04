@@ -8,17 +8,16 @@ import (
 )
 
 type Service interface {
-	GetFile(id string) (string, error)
-	PutFile(id string, content string) error
+	GetFile(ctx context.Context, id string) (string, error)
+	PutFile(ctx context.Context, id string, content string) error
 }
 
 type FileService struct {
-	Ctx     context.Context
 	Storage s.Storage
 }
 
-func (fs *FileService) GetFile(id string) (string, error) {
-	content, err := fs.Storage.GetFile(fs.Ctx, id)
+func (fs *FileService) GetFile(ctx context.Context, id  string) (string, error) {
+	content, err := fs.Storage.GetFile(ctx, id)
 	if err != nil {
 		log.Println("Error getting file from storage")
 		return "", err
@@ -26,8 +25,8 @@ func (fs *FileService) GetFile(id string) (string, error) {
 	return content, nil
 }
 
-func (fs *FileService) PutFile(id string, content string) error {
-	err := fs.Storage.PutFile(fs.Ctx, id, content)
+func (fs *FileService) PutFile(ctx context.Context, id string, content string) error {
+	err := fs.Storage.PutFile(ctx, id, content)
 	if err != nil {
 		log.Println("Error putting the file into storage")
 		return err

@@ -30,7 +30,6 @@ func main() {
 		Minio: minioClients,
 	}
 	service := &s.FileService{
-		Ctx:     ctx,
 		Storage: storage,
 	}
 	handler := h.NewHandler(service)

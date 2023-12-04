@@ -25,13 +25,13 @@ func (sm *StorageMock) PutFile(ctx context.Context, id string, content string) e
 func TestGetFileService(t *testing.T) {
 	mockStorage := &StorageMock{}
 	exp := "Content from storage"
-	mockStorage.On("GetFile", nil, "1").Return(exp, nil)
+	mockStorage.On("GetFile", context.Background(), "1").Return(exp, nil)
 
 	service := &FileService{
 		Storage: mockStorage,
 	}
 
-	content, err := service.GetFile("1")
+	content, err := service.GetFile(context.Background(),"1")
 
 	assert.Equal(t, exp, content)
 	assert.Equal(t, nil, err)
@@ -39,10 +39,10 @@ func TestGetFileService(t *testing.T) {
 
 func TestPutObjectService(t *testing.T) {
 	mockStorage := &StorageMock{}
-	mockStorage.On("PutFile", nil, "1", "test-content").Return(nil)
+	mockStorage.On("PutFile", context.Background(), "1", "test-content").Return(nil)
 
 	service := &FileService{Storage: mockStorage}
-	err := service.PutFile("1", "test-content")
+	err := service.PutFile(context.Background(),"1", "test-content")
 
 	assert.Equal(t, nil, err)
 }

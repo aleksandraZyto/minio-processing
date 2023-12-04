@@ -53,7 +53,7 @@ func (h *Handler) getFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
-	content, err := h.Service.GetFile(id)
+	content, err := h.Service.GetFile(r.Context(), id)
 	if err != nil {
 		if err.Error() == errors.New(c.KeyDoesNotExistErr).Error() {
 			http.Error(w, "This id does not exist", http.StatusNotFound)
@@ -102,7 +102,7 @@ func (h *Handler) putFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Service.PutFile(id, reqObj.Content)
+	err = h.Service.PutFile(r.Context(), id, reqObj.Content)
 	if err != nil {
 		log.Printf("Error putting object with id %s", id)
 		w.WriteHeader(http.StatusInternalServerError)
