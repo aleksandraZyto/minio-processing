@@ -14,12 +14,6 @@ Installed Go and docker-compose
 ### Get Object
 Request:
 ```GET /object/{id}```
-Response:
-```
-{
-    "Content": "object-content"
-}
-```
 
 ### Put Object
 ```PUT /object/{id}```
