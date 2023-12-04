@@ -3,13 +3,13 @@ package docker
 import (
 	"context"
 	"fmt"
+	db "github.com/aleksandraZyto/minio-processing/config/minio"
 	"log"
 	"strings"
 
+	cst "github.com/aleksandraZyto/minio-processing/constants"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	db "github.com/aleksandraZyto/minio-processing/db"
-	cst "github.com/aleksandraZyto/minio-processing/constants"
 )
 
 func NewClient() (*client.Client, error) {

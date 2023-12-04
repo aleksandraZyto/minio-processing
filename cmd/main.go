@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	d "github.com/aleksandraZyto/minio-processing/config/docker"
+	db "github.com/aleksandraZyto/minio-processing/config/minio"
+	h "github.com/aleksandraZyto/minio-processing/internal/handlers"
+	s "github.com/aleksandraZyto/minio-processing/internal/services"
+	st "github.com/aleksandraZyto/minio-processing/internal/storage"
 	"log"
 
-	db "github.com/aleksandraZyto/minio-processing/db"
-	d "github.com/aleksandraZyto/minio-processing/docker"
-	h "github.com/aleksandraZyto/minio-processing/handlers"
-	s "github.com/aleksandraZyto/minio-processing/services"
-	st "github.com/aleksandraZyto/minio-processing/storage"
 	"github.com/docker/docker/client"
 	"github.com/minio/minio-go/v7"
 )

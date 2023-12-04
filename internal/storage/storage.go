@@ -3,11 +3,11 @@ package storage
 import (
 	"bytes"
 	"context"
+	db "github.com/aleksandraZyto/minio-processing/config/minio"
 	"io"
 	"log"
 
 	c "github.com/aleksandraZyto/minio-processing/constants"
-	db "github.com/aleksandraZyto/minio-processing/db"
 	"github.com/minio/minio-go/v7"
 )
 

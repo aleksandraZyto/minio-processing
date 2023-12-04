@@ -3,13 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	m "github.com/aleksandraZyto/minio-processing/internal/middleware"
+	s "github.com/aleksandraZyto/minio-processing/internal/services"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	c "github.com/aleksandraZyto/minio-processing/constants"
-	s "github.com/aleksandraZyto/minio-processing/services"
-	m "github.com/aleksandraZyto/minio-processing/middleware"
 	"github.com/gorilla/mux"
 )
 

@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
+	s "github.com/aleksandraZyto/minio-processing/internal/storage"
 	"log"
-
-	s "github.com/aleksandraZyto/minio-processing/storage"
+	"time"
 )
 
 type Service interface {
@@ -16,7 +16,8 @@ type FileService struct {
 	Storage s.Storage
 }
 
-func (fs *FileService) GetFile(ctx context.Context, id  string) (string, error) {
+func (fs *FileService) GetFile(ctx context.Context, id string) (string, error) {
+	time.Sleep(6 * time.Second)
 	content, err := fs.Storage.GetFile(ctx, id)
 	if err != nil {
 		log.Println("Error getting file from storage")
